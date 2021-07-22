@@ -12,11 +12,11 @@ class RequestTest extends TestCase
     {
         $request = new Request([
             'author' => "Paul", 
-            'content' => "Contenu à la con"
+            'content' => "Contenu test"
         ]);
         
         $this->assertEquals("Paul", $request->get('author'));
-        $this->assertEquals("Contenu à la con", $request->get('content'));
+        $this->assertEquals("Contenu test", $request->get('content'));
         $this->assertNull($request->get('inexistant'));
     }
 }

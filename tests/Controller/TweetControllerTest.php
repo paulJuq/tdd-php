@@ -4,6 +4,7 @@ use PHPUnit\Framework\TestCase;
 use Twitter\Controller\TweetController;
 use Twitter\Http\Request;
 use Twitter\Model\TweetModel;
+use Twitter\Validation\RequestValidator;
 
 class TweetControllerTest extends TestCase{
 
@@ -13,7 +14,7 @@ class TweetControllerTest extends TestCase{
 	
 	protected function setUp(): void
 	{
-		
+
 		$this->pdo = new PDO('mysql:host=localhost;dbname=live_test;charset=utf8', 'root', '', [
 			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
 		]);
@@ -22,7 +23,10 @@ class TweetControllerTest extends TestCase{
 
 		$this->tweetModel = new TweetModel($this->pdo); 
 
-		$this->controller = new TweetController($this->tweetModel); 
+		$this->controller = new TweetController(
+			$this->tweetModel, 
+			new RequestValidator
+		); 
 	}
 
 	public function test_a_user_can_save_a_tweet(){
