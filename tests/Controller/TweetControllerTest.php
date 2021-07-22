@@ -50,51 +50,37 @@ class TweetControllerTest extends TestCase{
 
 		$this->assertEquals('Mon premier tweet', $data['content']);
 	}
-
-	public function test_it_cant_save_a_tweet_without_author()
-	{
-		// Etant donné qu'on a bien un content dans le post mais pas d'author
-		$_POST['content'] = "Tweet de test";
-		
-		//Quand j'appelle mon tweet controller
 	
+	/** 
+	 * @test
+	 * @dataProvider missingFields 
+	 * */
+	public function test_it_cant_save_a_tweet_if_fields_are_missing($postData, $errorMessage)
+	{
+		$_POST = $postData; 
+		
 		$response = $this->controller->saveTweet(); 
-
-		// Alors la réponse doit avoir un statut 400
-		// Et le contenu de la réponse devrait être "Le champ author est manquant"
 		
 		$this->assertEquals(400, $response->getResponseStatusCode()); 
-		$this->assertEquals("Le champ author est manquant", $response->getContent()); 
+		$this->assertEquals($errorMessage, $response->getContent()); 
 	}
 	
-	public function test_it_cant_save_a_tweet_without_content()
-	{
-		// Etant donné qu'on a bien un author dans le post mais pas de content
-		$_POST['author'] = "Paul";
-		
-		//Quand j'appelle mon tweet controller
-	
-		$response = $this->controller->saveTweet(); 
-
-		// Alors la réponse doit avoir un statut 400
-		// Et le contenu de la réponse devrait être "Le champ content est manquant"
-		
-		$this->assertEquals(400, $response->getResponseStatusCode()); 
-		$this->assertEquals("Le champ content est manquant", $response->getContent()); 
+	// Data provider : le test utilisant ce data provider va boucler sur chq élément du grand tableau et utiliser ses sous éléments comme paramètre pour le test appelé. 
+	public function missingFields(){
+		return [
+			[
+				['content' => "Tweet de test"],
+				"Le champ author est manquant",
+			],
+			[
+				['author' => 'Paul'], 
+				"Le champ content est manquant",
+			],
+			[
+				[], 
+				"Les champs author, content sont manquants",
+			],
+		];
 	}
 
-	public function test_it_cant_save_a_tweet_without_author_and_content()
-	{
-		// Etant donné que l'on a rien du tout 
-		
-		//Quand j'appelle mon tweet controller
-	
-		$response = $this->controller->saveTweet(); 
-
-		// Alors la réponse doit avoir un statut 400
-		// Et le contenu de la réponse devrait être "Les champs authors, content sont manquants"
-		
-		$this->assertEquals(400, $response->getResponseStatusCode()); 
-		$this->assertEquals("Les champs author, content sont manquants", $response->getContent()); 
-	}
 }
