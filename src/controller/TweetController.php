@@ -1,6 +1,8 @@
 <?php 
 
-namespace Twitter\Controller; 
+namespace Twitter\Controller;
+
+use Twitter\Http\Request;
 use Twitter\Http\Response;
 use Twitter\Model\TweetModel;
 
@@ -14,26 +16,28 @@ class TweetController{
 		$this->model = $model; 
 	}
 
-	public function saveTweet() : Response
+	public function saveTweet(Request $request) : Response
 	{
-		if ($response = $this->validateFields()) {
+		if ($response = $this->validateFields($request)) {
 			return $response; 
 		}
 
-		$this->model->save($_POST['author'], $_POST['content']); 
+		$this->model->save($request->get('author'), $request->get('content')); 
 
 		return new Response('', 302, ['Location' => '/']); 
 	}
 
-	protected function validateFields() : ?Response
+	protected function validateFields(Request $request) : ?Response
 	{
 		$invalidFields=[]; 
 
 		foreach ($this->requiredFields as $field) {
 			# code...
-			if(empty($_POST[$field])){
+
+			if(!$request->get($field)){
 				$invalidFields[] = $field;  
 			}
+
 		}	
 
 		if(empty($invalidFields)){

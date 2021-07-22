@@ -2,6 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use Twitter\Controller\TweetController;
+use Twitter\Http\Request;
 use Twitter\Model\TweetModel;
 
 class TweetControllerTest extends TestCase{
@@ -12,9 +13,7 @@ class TweetControllerTest extends TestCase{
 	
 	protected function setUp(): void
 	{
-
-		$_POST = []; 
-
+		
 		$this->pdo = new PDO('mysql:host=localhost;dbname=live_test;charset=utf8', 'root', '', [
 			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
 		]);
@@ -28,11 +27,12 @@ class TweetControllerTest extends TestCase{
 
 	public function test_a_user_can_save_a_tweet(){
 
-		$_POST['author'] = 'Paul'; 
+		$request = new Request([
+			'author' => 'Paul', 
+			'content' => 'Mon premier tweet'
+		]); 
 
-		$_POST['content'] = 'Mon premier tweet'; 
-
-		$response = $this->controller->saveTweet(); 
+		$response = $this->controller->saveTweet($request); 
 
 		$this->assertEquals(302, $response->getResponseStatusCode());
 
@@ -57,9 +57,9 @@ class TweetControllerTest extends TestCase{
 	 * */
 	public function test_it_cant_save_a_tweet_if_fields_are_missing($postData, $errorMessage)
 	{
-		$_POST = $postData; 
+		$request = new Request($postData);
 		
-		$response = $this->controller->saveTweet(); 
+		$response = $this->controller->saveTweet($request); 
 		
 		$this->assertEquals(400, $response->getResponseStatusCode()); 
 		$this->assertEquals($errorMessage, $response->getContent()); 
