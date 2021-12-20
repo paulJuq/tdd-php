@@ -15,7 +15,6 @@ class TweetController{
 
 	public function __construct(TweetModel $model, RequestValidator $requestValidator)
 	{
-	    var_dump($requestValidator);
 		$this->model = $model; 
 		$this->requestValidator = $requestValidator; 
 	}
